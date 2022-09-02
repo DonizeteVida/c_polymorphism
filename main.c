@@ -9,6 +9,18 @@ typedef struct {
     int faces;
 } Square;
 
+typedef struct {
+    void (*howManyVertices)(Shape*);
+} ShapeInterface;
+
+static void passCallback(ShapeInterface* shapeInterface, Shape* shape) {
+    shapeInterface->howManyVertices(shape);
+}
+
+static void callback(Shape* shape) {
+    printf("Vertices: %d\n", shape->vertices);
+}
+
 int main(int argc, char* argv[]) {
     printf("Hello World\n");
     Square square = {
@@ -17,8 +29,10 @@ int main(int argc, char* argv[]) {
         },
         .faces = 6
     };
-    Shape* shape = &square;
-    int* vertices = &square;
-    printf("Vertices: %d\n", *vertices);
-    printf("Vertices: %d\n", shape->vertices);
+    
+    ShapeInterface interface = {
+        .howManyVertices = &callback
+    };
+
+    passCallback(&interface, &square);
 }
