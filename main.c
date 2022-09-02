@@ -1,5 +1,9 @@
 #include <stdio.h>
 
+#define Function0(name, out) out (*name)(void)
+#define Function1(name, out, p1) out (*name)(p1)
+#define Cast(from, to) (to) from
+
 typedef struct {
     int vertices;
 } Shape;
@@ -9,7 +13,9 @@ typedef struct {
     int faces;
 } Square;
 
-static void passCallback(void (*callback)(void*), void* context) {
+typedef Function1(VoidCallback, void, void*);
+
+static void passCallback(VoidCallback callback, void* context) {
     callback(context);
 }
 
@@ -26,5 +32,5 @@ int main(int argc, char* argv[]) {
         .faces = 6
     };
 
-    passCallback(&callback, &square);
+    passCallback(Cast(&callback, VoidCallback), &square);
 }
