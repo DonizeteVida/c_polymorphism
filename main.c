@@ -1,36 +1,48 @@
 #include <stdio.h>
 
-#define Function0(name, out) out (*name)(void)
-#define Function1(name, out, p1) out (*name)(p1)
-#define Cast(from, to) (to) from
+#define Function0(return, name) return (*name)(void)
+#define Function1(return, name, p1) return (*name)(p1)
+#define Cast(is, as) (as) is
+
+typedef struct Shape Shape;
 
 typedef struct {
+    Function1(void, incrementVertices, Shape *);
+} ShapeInterface;
+
+struct Shape {
     int vertices;
-} Shape;
+    ShapeInterface interface;
+};
 
 typedef struct {
     Shape shape;
     int faces;
 } Square;
 
-typedef Function1(VoidCallback, void, void*);
+typedef Function1(void, VoidCallback, void *);
 
-static void passCallback(VoidCallback callback, void* context) {
+static void passCallback(VoidCallback callback, void *context) {
     callback(context);
 }
 
-static void callback(Shape* shape) {
-    printf("Vertices: %d\n", shape->vertices);
+static void callback(Shape *this) {
+    printf("Vertices: %d\n", this->vertices);
+    this->vertices++;
+    printf("Vertices: %d\n", this->vertices);
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
     printf("Hello World\n");
     Square square = {
         .shape = {
-            .vertices = 8
+            .vertices = 8,
+            .interface = {
+                .incrementVertices = &callback
+            }
         },
         .faces = 6
     };
 
-    passCallback(Cast(&callback, VoidCallback), &square);
+    passCallback(Cast(square.shape.interface.incrementVertices, VoidCallback), &square);
 }
