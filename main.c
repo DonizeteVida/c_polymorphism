@@ -26,7 +26,7 @@ static void passCallback(VoidCallback callback, void *context) {
     callback(context);
 }
 
-static void callback(Shape *this) {
+static void incrementVertices(Shape *this) {
     printf("Vertices: %d\n", this->vertices);
     this->vertices++;
     printf("Vertices: %d\n", this->vertices);
@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
         .shape = {
             .vertices = 8,
             .interface = {
-                .incrementVertices = &callback
+                .incrementVertices = &incrementVertices
             }
         },
         .faces = 6
